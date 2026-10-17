@@ -1,0 +1,7 @@
+{
+  "id": "task-manager",
+  "title": "Task Manager",
+  "difficulty": "starter",
+  "starterOnly": true,
+  "privateTestsExcluded": true
+}
