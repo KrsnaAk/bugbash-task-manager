@@ -48,3 +48,20 @@ function renderPrioritySummary() {
   host.prepend(summary);
 }
 renderPrioritySummary();
+
+
+// Planning tools expansion: due dates and priority ordering.
+(() => {
+  const baseRender = render;
+  const enhance = () => {
+    if (document.querySelector("#planning-tools")) return;
+    const panel = document.createElement("section"); panel.id = "planning-tools"; panel.className = "item";
+    panel.innerHTML = '<strong>Planning tools</strong><form id="due-task" class="row"><input name="title" placeholder="Task title"/><input name="due" type="date"/><select name="priority"><option>Normal</option><option>High</option><option>Low</option></select><button>Add planned task</button></form><label class="muted small"><input id="overdue-only" type="checkbox"/> Overdue only</label><p id="due-list" class="muted small"></p>';
+    document.querySelector("#app")?.append(panel);
+    panel.querySelector("#due-task").onsubmit = (event) => { event.preventDefault(); const form = new FormData(event.currentTarget); tasks.push({ id: Date.now(), title: String(form.get("title")), done: false, due: String(form.get("due")), priority: String(form.get("priority")) }); render(); };
+    panel.querySelector("#overdue-only").onchange = (event) => { const now = new Date().toISOString().slice(0, 10); const rows = tasks.filter((task) => !event.target.checked || task.due < now); panel.querySelector("#due-list").textContent = rows.map((task) => task.title + " · " + (task.due || "no date")).join(" · ") || "No planned tasks"; };
+    panel.querySelector("#overdue-only").dispatchEvent(new Event("change"));
+  };
+  render = () => { baseRender(); enhance(); };
+  enhance();
+})();
