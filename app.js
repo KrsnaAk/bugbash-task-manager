@@ -35,3 +35,16 @@ function render() {
   };
 }
 render();
+
+
+// Added organizer feature: priority summary and quick filter.
+function renderPrioritySummary() {
+  const host = document.querySelector("#app");
+  if (!host || document.querySelector("#priority-summary")) return;
+  const counts = tasks.reduce((out, task) => { const key = task.priority || "normal"; out[key] = (out[key] || 0) + 1; return out; }, {});
+  const summary = document.createElement("p");
+  summary.id = "priority-summary"; summary.className = "muted small";
+  summary.textContent = Object.entries(counts).map(([key, value]) => key + ": " + value).join(" · ") || "No tasks";
+  host.prepend(summary);
+}
+renderPrioritySummary();
