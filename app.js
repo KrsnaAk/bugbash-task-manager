@@ -37,7 +37,10 @@ function render() {
   document.querySelector("#new").onsubmit = (e) => {
     e.preventDefault();
     const input = e.currentTarget.querySelector("input");
-    tasks.push({ id: Date.now(), title: input.value, done: false, completed: false });
+    const title = input.value.trim();
+    if (!title) return;
+    if (tasks.some((t) => t.title.trim().toLowerCase() === title.toLowerCase())) return;
+    tasks.push({ id: Date.now(), title, done: false, completed: false });
     input.value = "";
     render();
   };
