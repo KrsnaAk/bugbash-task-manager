@@ -9,8 +9,12 @@ function render() {
   const visible =
     filter === "all"
       ? tasks
-      : tasks.filter((t) => (filter === "done" ? t.done : !t.done));
-  app.innerHTML = `<div class="row space"><div><span class="label">${visible.length} visible tasks</span><h2>Today’s work</h2></div><div class="row"><button class="secondary" data-filter="all">All</button><button class="secondary" data-filter="open">Active</button><button class="secondary" data-filter="done">Done</button></div></div><form id="new" class="row"><input aria-label="New task" placeholder="Add a task"/><button>Add task</button></form><div class="list">${visible.map((t) => `<article class="item"><label class="row"><input type="checkbox" data-toggle="${t.id}" ${t.done ? "checked" : ""}/><strong>${t.title}</strong></label><span class="pill">${t.done ? "done" : "active"}</span></article>`).join("") || '<p class="muted">Nothing here yet.</p>'}</div>`;
+      : tasks.filter((t) =>
+          filter === "completed" || filter === "done"
+            ? (t.completed ?? t.done)
+            : !(t.completed ?? t.done),
+        );
+  app.innerHTML = `<div class="row space"><div><span class="label">${visible.length} visible tasks</span><h2>Today’s work</h2></div><div class="row"><button class="secondary" data-filter="all">All</button><button class="secondary" data-filter="active">Active</button><button class="secondary" data-filter="completed">Completed</button></div></div><form id="new" class="row"><input aria-label="New task" placeholder="Add a task"/><button>Add task</button></form><div class="list">${visible.map((t) => `<article class="item"><label class="row"><input type="checkbox" data-toggle="${t.id}" ${t.done ? "checked" : ""}/><strong>${t.title}</strong></label><span class="pill">${t.done ? "done" : "active"}</span></article>`).join("") || '<p class="muted">Nothing here yet.</p>'}</div>`;
   document.querySelectorAll("[data-filter]").forEach(
     (b) =>
       (b.onclick = () => {
