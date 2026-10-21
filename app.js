@@ -1,9 +1,30 @@
 const app = document.querySelector("#app");
 const key = "bug-bash-tasks";
-let tasks = JSON.parse(
-  localStorage.getItem(key) ||
-    '[{"id":1,"title":"Prepare demo","done":false,"completed":false},{"id":2,"title":"Review PR","done":true,"completed":true}]',
-);
+function loadTasks() {
+  try {
+    const raw = localStorage.getItem(key);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed)) {
+        return parsed.map((t) => ({
+          ...t,
+          done: Boolean(t.done ?? t.completed),
+          completed: Boolean(t.completed ?? t.done),
+        }));
+      }
+    }
+  } catch (e) {}
+  return [
+    { id: 1, title: "Prepare demo", done: false, completed: false },
+    { id: 2, title: "Review PR", done: true, completed: true },
+  ];
+}
+function saveTasks() {
+  try {
+    localStorage.setItem(key, JSON.stringify(tasks));
+  } catch (e) {}
+}
+let tasks = loadTasks();
 let filter = "all";
 function render() {
   const visible =
@@ -28,6 +49,7 @@ function render() {
       if (t) {
         t.done = c.checked;
         t.completed = c.checked;
+        saveTasks();
         render();
       }
     };
@@ -41,6 +63,7 @@ function render() {
     if (!title) return;
     if (tasks.some((t) => t.title.trim().toLowerCase() === title.toLowerCase())) return;
     tasks.push({ id: Date.now(), title, done: false, completed: false });
+    saveTasks();
     input.value = "";
     render();
   };
